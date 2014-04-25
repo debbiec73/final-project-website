@@ -28,10 +28,14 @@
  */
 set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ .'/vendor/google/apiclient/src');
 
-require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
+$id ="";
+$name="";
+$email='';
 
 /**
  * Simple server to demonstrate how to use Google+ Sign-In and make a request
@@ -43,17 +47,17 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Replace this with the client ID you got from the Google APIs console.
  */
-const CLIENT_ID = 'YOUR_CLIENT_ID';
+const CLIENT_ID = '271416359764-gqqnqrla4he04cp75fddqilf5uvnk17o.apps.googleusercontent.com';
 
 /**
  * Replace this with the client secret you got from the Google APIs console.
  */
-const CLIENT_SECRET = 'YOUR_CLIENT_SECRET';
+const CLIENT_SECRET = 'm39YYccWp4_jFKy-ytddC9lr';
 
 /**
  * Optionally replace this with your application's name.
  */
-const APPLICATION_NAME = "Google+ PHP Quickstart";
+const APPLICATION_NAME = "Homeschool Helps";
 
 $client = new Google_Client();
 $client->setApplicationName(APPLICATION_NAME);
@@ -72,7 +76,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 $app->register(new Silex\Provider\SessionServiceProvider());
 
 // Initialize a session for the current user, and render index.html.
-$app->get('/', function () use ($app) {
+$app->match('/', function () use ($app) {
     $state = md5(rand());
     $app['session']->set('state', $state);
     return $app['twig']->render('index.html', array(
@@ -85,7 +89,7 @@ $app->get('/', function () use ($app) {
 // Upgrade given auth code to token, and store it in the session.
 // POST body of request should be the authorization code.
 // Example URI: /connect?state=...&gplus_id=...
-$app->post('/connect', function (Request $request) use ($app, $client) {
+$app->match('/connect', function (Request $request) use ($app, $client) {
     $token = $app['session']->get('token');
 
     if (empty($token)) {
@@ -112,16 +116,41 @@ $app->post('/connect', function (Request $request) use ($app, $client) {
         $attributes = $client->verifyIdToken($token->id_token, CLIENT_ID)
             ->getAttributes();
         $gplus_id = $attributes["payload"]["sub"];
+        $_SESSION['id'] = $gplus_id;
+        $plus = new Google_Service_Plus($client);
+        $me = $plus->people->get('me');
+        $name = $me['name']['displayName'];
+        $email = $me['email']['value'];
+        $id = $me['id'];
+
+
+        print_r($me);
+        print_r($attributes);
+
+
 
         // Store the token in the session for later use.
         $app['session']->set('token', json_encode($token));
         $response = 'Successfully connected with token: ' . print_r($token, true);
+
     } else {
         $response = 'Already connected';
     }
 
     return new Response($response, 200);
-});
+})
+->method('GET|POST');
+
+// after $client is authenticated
+//$plus2 = new Google_Service_Plus($client);
+if($client->getAccessToken())
+{
+
+        // $user_info = $plus->$user->get();
+//$username = $user['name']['displayName'];
+//$email = $user['email']['value'];
+//$user_id = $user['userid'];
+}
 
 // Get list of people user has shared with this app.
 $app->get('/people', function () use ($app, $client, $plus) {
@@ -144,6 +173,9 @@ $app->get('/people', function () use ($app, $client, $plus) {
     return $app->json($people->toSimpleObject());
 });
 
+$app->match('/student', function (Request $request) use ($app, $client) {
+    $token = $app['session']->get('token');
+});
 // Revoke current user's token and reset their session.
 $app->post('/disconnect', function () use ($app, $client) {
     $token = json_decode($app['session']->get('token'))->access_token;
