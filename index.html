@@ -73,7 +73,7 @@
           <h1>A Place for Homeschoolers</h1>
           <p>Here you can record all of the great things your homeschooled children are doing!  Keep track of all the academic and fun things they are doing!</p>
           <p>Please log in with your google account to get started tracking!</p>
-          <p><a class="btn btn-primary btn-lg" href="student.php" role="button">Start Tracking</a></p>
+          <p><a class="btn btn-primary btn-lg" href="student.html" role="button">Start Tracking</a></p>
       </div>
   </div>
   <script src="js/bootstrap.min.js"></script>
@@ -144,61 +144,63 @@ helper = (function () {
             }
             console.log('authResult', authResult);
 
-            /**
-             * Retrieves and renders the authenticated user's Google+ profile.
-             */
-                //renderProfile: function(){
-            function loadProfile() {
-                var request = gapi.client.plus.people.get({
-                    'userId': 'me'
-                });
-                request.execute(loadProfileCallback);
+        /**
+         * Retrieves and renders the authenticated user's Google+ profile.
+         */
+        //renderProfile: function(){
+        function loadProfile () {
+            var request = gapi.client.plus.people.get({
+                'userId': 'me'
+            });
+            request.execute(loadProfileCallback);
 
-                function loadProfileCallback(obj) {
-                    profile = obj;
-                    email = obj['emails'].filter(function (v) {
-                        return v.type === 'account';
-                    })[0].value;
-                    displayProfile(profile);
-                }
-
-                function displayProfile(profile) {
-                    document.getElementById('id').innerHTML = profile['id'];
-                    document.getElementById('name').innerHTML = profile['displayName'];
-                    document.getElementById('email').innerHTML = email;
-                    //toggleElement('profile');
-                }
+            function loadProfileCallback(obj) {
+                profile = obj;
+                email = obj['emails'].filter(function (v) {
+                    return v.type === 'account';
+                })[0].value;
+                displayProfile(profile);
             }
-                //$('#authOps').show('slow');
-                //$('#gConnect').hide();
 
-                $.ajax({
-                    url: 'user.php',
-                    type: 'POST',
-                    //contentType: 'application/json; charset=utf-8',
-                    data: {
-                        //'profile':profile
-                        'userId': profile['id'],
-                        'name': profile['displayName'],
-                        'email': email
+            function displayProfile(profile) {
+                document.getElementById('id').innerHTML = profile['id'];
+                document.getElementById('name').innerHTML = profile['displayName'];
+                document.getElementById('email').innerHTML = email;
+                //toggleElement('profile');
+            }
+        }
 
-                    },
-                    success: function (data) {
-                        alert("sent user");
-                        $('#gConnect').hide();
 
-                    },
-                    error: function (e) {
+           // $('#authOps').show('slow');
+            //$('#gConnect').hide();
 
-                        console.log(e.message);
+        $.ajax({
+                url: 'user.php',
+                type: 'POST',
+                //contentType: 'application/json; charset=utf-8',
+                data: {
+                    //'profile':profile
+                    'userId': profile['id'],
+                    'name': profile['displayName'],
+                    'email': email
 
-                    }
-                });
-                $('#authOps').show('slow');
-                $('#gConnect').hide();
-            },
+                },
+                success: function (data) {
+                    alert("sent user");
+                    $('#gConnect').hide();
 
-            //}
+                },
+                error: function (e) {
+
+                    console.log(e.message);
+
+                }
+            });
+            $('#authOps').show('slow');
+            $('#gConnect').hide();
+        //}
+        },
+
 
 
             /**renderProfile: function() {
@@ -221,7 +223,7 @@ helper = (function () {
         });*/
             //$('#authOps').show('slow');
             //$('#gConnect').hide();
-        
+        //},
         /**
          * Calls the server endpoint to disconnect the app for the user.
          */
