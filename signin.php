@@ -47,12 +47,12 @@ $email='';
 /**
  * Replace this with the client ID you got from the Google APIs console.
  */
-const CLIENT_ID = '271416359764-gqqnqrla4he04cp75fddqilf5uvnk17o.apps.googleusercontent.com';
+const CLIENT_ID = '';
 
 /**
  * Replace this with the client secret you got from the Google APIs console.
  */
-const CLIENT_SECRET = 'm39YYccWp4_jFKy-ytddC9lr';
+const CLIENT_SECRET = '';
 
 /**
  * Optionally replace this with your application's name.
